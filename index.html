@@ -161,9 +161,11 @@
 
         btn.appendChild(labelDiv);
         btn.appendChild(contentDiv);
-        if (content.split('\n').length > 3 || content.length > 80) {
-          btn.appendChild(expandIcon);
-        }
+       const lines = content.split(/\r?\n/).length;
+       const renderedLines = content.split(/\r?\n/).length;
+       if (lines > 3 || content.length > 80 || renderedLines > 3) {
+  btn.appendChild(expandIcon);
+}
 
         btn.onclick = (e) => {
           const bounds = btn.getBoundingClientRect();
