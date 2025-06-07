@@ -4,13 +4,30 @@
   <meta charset="UTF-8" />
   <title>定型文ランチャー</title>
   <style>
-    body { font-family: sans-serif; margin: 2rem; }
-    .tabs { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
-    .tab { padding: 0.3rem 0.8rem; border: 1px solid #ccc; cursor: pointer; border-radius: 6px; font-size: 14px; }
-    .tab.active { background: #007bff; color: #fff; }
+    body {
+  font-family: sans-serif;
+  margin: 2rem;
+  background-color: #F4F4F6;
+}
+    .tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: hidden;
+  gap: 0.3rem;
+  padding: 0.2rem 0;
+  margin-bottom: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+  scrollbar-gutter: stable both-edges;
+}
+    
+    .tab {
+      background-color: white;
+  white-space: nowrap; padding: 0.3rem 0.8rem; border: 1px solid #ccc; cursor: pointer; border-radius: 6px; font-size: 14px; }
+    .tab.active { background: #7AA6A8; color: #fff; font-weight: bold; }
     .buttons {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 0.5rem;
       margin-bottom: 1rem;
     }
@@ -18,121 +35,75 @@
       position: relative;
     }
     .button-main {
-      width: 100%;
-      padding: 0.4rem 0.6rem;
-      font-size: 13px;
-      cursor: pointer;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      background: #f9f9f9;
-      text-align: left;
-      position: relative;
-    }
-    .button-main .label {
-      font-weight: bold;
-      display: block;
-    }
+  background-color: #FAFAFB;
+  border: 1px solid #ccc;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  width: 100%;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease-in-out;
+}
     .button-main .content {
-      font-size: 12px;
-      color: #777;
-      margin-top: 2px;
-      max-height: 3.6em;
-      min-height: 3.6em;
-      overflow: hidden;
-      position: relative;
-      line-height: 1.2em;
-    }
-    .button-main .content::after {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 1.2em;
-      background: linear-gradient(to bottom, transparent, #f9f9f9);
-    }
-    .button-main.expanded .content {
-      max-height: none;
-      min-height: unset;
-    }
-    .button-main.expanded .content::after {
-      display: none;
-    }
-    .expand-icon {
+  font-size: 12px;
+  color: #777;
+  margin-top: 2px;
+  line-height: 1.2em;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-height: 3.6em;
+  -webkit-line-clamp: 3;
+  min-height: 3.6em;
+}
+.button-main.expanded .content {
+  max-height: none;
+  -webkit-line-clamp: unset;
+  white-space: normal;
+}
+
+.button-main.expanded .content {
+  max-height: none;
+  -webkit-line-clamp: unset;
+  white-space: normal;
+}
+    .button-main .expand-icon {
       font-size: 10px;
       color: #999;
       position: absolute;
       bottom: 2px;
       right: 6px;
     }
-    .menu-button {
-      position: absolute;
-      top: 2px;
-      right: 2px;
-      background: none;
-      border: none;
-      font-size: 14px;
-      cursor: pointer;
-      color: #666;
-      z-index: 2;
-    }
-    .modal {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .modal-content {
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
-      width: 300px;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .modal-content input, .modal-content textarea {
-      width: 100%;
-      font-size: 14px;
-      padding: 0.5rem;
-    }
-    .modal-content button {
-      padding: 0.4rem 0.6rem;
-      font-size: 13px;
-      cursor: pointer;
-    }
-    .modal-buttons { display: flex; justify-content: flex-end; gap: 0.5rem; }
-    textarea {
-      width: 100%; height: 150px; font-size: 14px;
-      padding: 1rem; box-sizing: border-box;
-    }
     .actions { margin-top: 1rem; display: flex; gap: 1rem; }
     .actions button { padding: 0.5rem 1rem; font-size: 14px; cursor: pointer; }
-  </style>
+    textarea {
+  width: 100%; height: 280px; font-size: 14px;
+  padding: 1rem; box-sizing: border-box;
+  resize: none;
+}
+  .resizer:hover {
+  background: #888;
+}
+</style>
 </head>
 <body>
-  <h1>定型文ランチャー</h1>
-  <div class="tabs" id="tabs"></div>
-  <div class="buttons" id="buttons"></div>
-
-  <textarea id="editor" placeholder="ここに定型文が追加されていきます..."></textarea>
-  <div class="actions">
-    <button onclick="copyText()">コピー</button>
-    <button onclick="clearText()">クリア</button>
+    <div style="display: flex; flex-direction: column; gap: 1rem; max-height: 80vh;">
+  <div class="tabs" id="tabs" style="position: sticky; top: 0; background: #F4F4F6; z-index: 10; height: 40px; align-items: center; display: flex; min-height: 40px;"></div>
+  <div class="buttons-resizable" style="position: relative;">
+  <div class="buttons-container" style="flex: 1; overflow-y: auto; max-height: calc(3.6em * 3 + 2rem); margin-bottom: 0.5rem;">
+    <div class="buttons" id="buttons"></div>
   </div>
-
-  <div id="modal" class="modal" style="display:none;" onclick="closeModal(event)">
-    <div class="modal-content" onclick="event.stopPropagation();">
-      <input id="editLabel" placeholder="ラベル">
-      <textarea id="editContent" rows="4" placeholder="内容"></textarea>
-      <div class="modal-buttons">
-        <button onclick="closeModal()">キャンセル</button>
-        <button onclick="saveEdit()">保存</button>
-      </div>
-    </div>
+  <div class="resizer" style="height: 2px; cursor: row-resize; background: #7AA6A8; margin: 12px 0;"></div>
+</div>
+<div class="editor-container" style="position: relative; top: -18px;">
+  <textarea id="editor" placeholder="ここに定型文が追加されていきます..." style="height: 280px; font-size: 14px; padding: 1rem; box-sizing: border-box; resize: none;"></textarea>
+  <div class="editor-resizer" style="height: 2px; background: #7AA6A8; cursor: row-resize; margin: 12px 0;"></div>
+</div>
+  <div class="actions" style="margin-top: -0.5rem; display: flex; justify-content: space-between;">
+    <button onclick="clearText()" style="background: #eee; border: 1px solid #ccc; border-radius: 6px;">クリア</button>
+    <div style="flex: 1"></div>
+    <button onclick="copyText()" style="background: #7AA6A8; color: #fff; border: none; border-radius: 6px;">コピー</button>
   </div>
 
   <script>
@@ -149,24 +120,32 @@
         const tab = document.createElement('div');
         tab.className = 'tab' + (group === currentTab ? ' active' : '');
         tab.textContent = group;
-        tab.onclick = () => { currentTab = group; renderTabs(); renderButtons(); };
+        tab.onclick = () => {
+          currentTab = group;
+          renderTabs();
+          renderButtons();
+          renderColorPalette();
+        };
         tabContainer.appendChild(tab);
       });
     }
 
     function renderButtons() {
+      document.getElementById('modal').style.display = 'none';
       const btnContainer = document.getElementById('buttons');
       btnContainer.innerHTML = '';
       config[currentTab]?.forEach((row, index) => {
-        if (!Array.isArray(row) || row.length < 2) return;
+        if (!Array.isArray(row) || row.length < 2 || !row[0] || !row[1]) return;
         const label = row[0];
         const content = row[1];
+        const color = row[2] || '#f9f9f9';
 
         const wrapper = document.createElement('div');
         wrapper.className = 'button-wrapper';
 
         const btn = document.createElement('button');
         btn.className = 'button-main';
+        btn.style.background = color;
 
         const labelDiv = document.createElement('span');
         labelDiv.className = 'label';
@@ -174,7 +153,7 @@
 
         const contentDiv = document.createElement('span');
         contentDiv.className = 'content';
-        contentDiv.textContent = content;
+        contentDiv.innerHTML = content.replace(/\n/g, '<br>');
 
         const expandIcon = document.createElement('span');
         expandIcon.className = 'expand-icon';
@@ -182,13 +161,17 @@
 
         btn.appendChild(labelDiv);
         btn.appendChild(contentDiv);
-        btn.appendChild(expandIcon);
+        if (content.split('\n').length > 3 || content.length > 80) {
+          btn.appendChild(expandIcon);
+        }
 
         btn.onclick = (e) => {
-          const isExpandIcon = e.target.classList.contains('expand-icon');
+          const bounds = btn.getBoundingClientRect();
+          const clickY = e.clientY - bounds.top;
+          const isBottomClick = clickY > bounds.height - 20;
           const isExpanded = btn.classList.contains('expanded');
 
-          if (isExpandIcon) {
+          if (isBottomClick) {
             if (!isExpanded) {
               document.querySelectorAll('.button-main.expanded').forEach(b => {
                 b.classList.remove('expanded');
@@ -201,31 +184,52 @@
               btn.classList.remove('expanded');
               expandIcon.textContent = '▼';
             }
-          } else {
-            insertText(content);
+            return;
           }
+
+          insertText(content);
         };
 
         const menuBtn = document.createElement('button');
         menuBtn.className = 'menu-button';
-        menuBtn.textContent = '✎';
+        menuBtn.textContent = '…';
+        menuBtn.style.position = 'absolute';
+        menuBtn.style.top = '2px';
+        menuBtn.style.right = '2px';
+        menuBtn.style.background = 'none';
+        menuBtn.style.border = 'none';
+        menuBtn.style.cursor = 'pointer';
+        menuBtn.style.fontSize = '14px';
+        menuBtn.title = '編集';
         menuBtn.onclick = (e) => {
           e.stopPropagation();
           currentEditIndex = index;
           document.getElementById('editLabel').value = label;
           document.getElementById('editContent').value = content;
+          document.getElementById('editColor').value = color;
           document.getElementById('modal').style.display = 'flex';
         };
 
-        wrapper.appendChild(btn);
         wrapper.appendChild(menuBtn);
+        wrapper.appendChild(btn);
         btnContainer.appendChild(wrapper);
       });
     }
 
     function insertText(text) {
       const editor = document.getElementById('editor');
-      editor.value += (editor.value ? '\n' : '') + text;
+      const current = editor.value;
+      const endsWithNewline = current.endsWith('\n');
+
+      if (current) {
+        if (!endsWithNewline) {
+          editor.value = current + '\n\n' + text;
+        } else {
+          editor.value = current + text;
+        }
+      } else {
+        editor.value = text;
+      }
     }
 
     function copyText() {
@@ -237,39 +241,31 @@
         temp.select();
         document.execCommand('copy');
         document.body.removeChild(temp);
-        showCopyMessage();
         return;
       }
       navigator.clipboard.writeText(text).then(() => {
-        showCopyMessage();
-      }).catch((err) => {
-        console.error(err);
-        alert("コピーに失敗しました");
-      });
-    }
-
-    function showCopyMessage() {
-      const msg = document.createElement('div');
-      msg.textContent = "コピーしました！";
-      msg.style.position = 'fixed';
-      msg.style.bottom = '20px';
-      msg.style.left = '50%';
-      msg.style.transform = 'translateX(-50%)';
-      msg.style.background = '#333';
-      msg.style.color = '#fff';
-      msg.style.padding = '0.6rem 1rem';
-      msg.style.borderRadius = '6px';
-      msg.style.zIndex = 10000;
-      msg.style.fontSize = '14px';
-      document.body.appendChild(msg);
-      setTimeout(() => msg.remove(), 2000);
+        const msg = document.createElement('div');
+        msg.textContent = "コピーしました！";
+        msg.style.position = 'fixed';
+        msg.style.bottom = '20px';
+        msg.style.left = '50%';
+        msg.style.transform = 'translateX(-50%)';
+        msg.style.background = '#333';
+        msg.style.color = '#fff';
+        msg.style.padding = '0.6rem 1rem';
+        msg.style.borderRadius = '6px';
+        msg.style.zIndex = 10000;
+        msg.style.fontSize = '14px';
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 2000);
+      }).catch(() => alert("コピーに失敗しました"));
     }
 
     function clearText() {
       document.getElementById('editor').value = '';
     }
 
-    function closeModal(event) {
+    function closeModal() {
       document.getElementById('modal').style.display = 'none';
     }
 
@@ -277,10 +273,31 @@
       const newLabel = document.getElementById('editLabel').value;
       const newContent = document.getElementById('editContent').value;
       if (currentEditIndex !== null) {
-        config[currentTab][currentEditIndex] = [newLabel, newContent];
+        config[currentTab][currentEditIndex][0] = newLabel;
+        config[currentTab][currentEditIndex][1] = newContent;
+        config[currentTab][currentEditIndex][2] = document.getElementById('editColor').value;
         renderButtons();
         closeModal();
       }
+    }
+
+    function renderColorPalette() {
+      const palette = ['#DCEBF2', '#F3D8D5', '#FAE3E1', '#E9D8C9', '#F8EDEB', '#D6E2E9', '#E3DFFF', '#D8EBD8', '#FFF3D6', '#FAD2CF'];
+      const container = document.getElementById('colorPalette');
+      container.innerHTML = '';
+      palette.forEach(color => {
+        const circle = document.createElement('div');
+        circle.style.width = '24px';
+        circle.style.height = '24px';
+        circle.style.borderRadius = '50%';
+        circle.style.background = color;
+        circle.style.cursor = 'pointer';
+        circle.title = color;
+        circle.onclick = () => {
+          document.getElementById('editColor').value = color;
+        };
+        container.appendChild(circle);
+      });
     }
 
     fetch(GAS_URL)
@@ -293,8 +310,84 @@
         currentTab = Object.keys(config)[0];
         renderTabs();
         renderButtons();
+        renderColorPalette();
       })
       .catch(err => alert("読み込みエラー: " + err));
-  </script>
+  document.addEventListener('DOMContentLoaded', () => {
+  const resizer = document.querySelector('.resizer');
+  const container = document.querySelector('.buttons-container');
+  let startY, startHeight;
+
+  resizer.addEventListener('mousedown', e => {
+    startY = e.clientY;
+    startHeight = parseInt(document.defaultView.getComputedStyle(container).height, 10);
+    document.documentElement.addEventListener('mousemove', doDrag);
+    document.documentElement.addEventListener('mouseup', stopDrag);
+  });
+
+  function doDrag(e) {
+    container.style.maxHeight = `${startHeight + e.clientY - startY}px`;
+  }
+
+  function stopDrag() {
+    document.documentElement.removeEventListener('mousemove', doDrag);
+    document.documentElement.removeEventListener('mouseup', stopDrag);
+  }
+});
+document.addEventListener('DOMContentLoaded', () => {
+  const resizer = document.querySelector('.resizer');
+  const container = document.querySelector('.buttons-container');
+  let startY, startHeight;
+
+  resizer.addEventListener('mousedown', e => {
+    startY = e.clientY;
+    startHeight = parseInt(document.defaultView.getComputedStyle(container).height, 10);
+    document.documentElement.addEventListener('mousemove', doDrag);
+    document.documentElement.addEventListener('mouseup', stopDrag);
+  });
+
+  function doDrag(e) {
+    container.style.maxHeight = `${startHeight + e.clientY - startY}px`;
+  }
+
+  function stopDrag() {
+    document.documentElement.removeEventListener('mousemove', doDrag);
+    document.documentElement.removeEventListener('mouseup', stopDrag);
+  }
+
+  const editorResizer = document.querySelector('.editor-resizer');
+  const editor = document.getElementById('editor');
+  let startEditorHeight;
+
+  editorResizer.addEventListener('mousedown', e => {
+    startY = e.clientY;
+    startEditorHeight = parseInt(document.defaultView.getComputedStyle(editor).height, 10);
+    document.documentElement.addEventListener('mousemove', resizeEditor);
+    document.documentElement.addEventListener('mouseup', stopResizeEditor);
+  });
+
+  function resizeEditor(e) {
+    editor.style.height = `${startEditorHeight + e.clientY - startY}px`;
+  }
+
+  function stopResizeEditor() {
+    document.documentElement.removeEventListener('mousemove', resizeEditor);
+    document.documentElement.removeEventListener('mouseup', stopResizeEditor);
+  }
+});
+</script>
+
+  <div id="modal" class="modal" onclick="closeModal()" style="display:none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;">
+    <div class="modal-content" style="background: white; padding: 1rem; border-radius: 8px; width: 300px; display: flex; flex-direction: column; gap: 0.5rem;" onclick="event.stopPropagation();">
+      <input id="editLabel" placeholder="ラベル">
+      <textarea id="editContent" rows="4" placeholder="内容"></textarea>
+      <div id="colorPalette" style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.5rem 0;"></div>
+      <input type="color" id="editColor" value="#f9f9f9" style="width: 32px; height: 32px; border: none; border-radius: 50%; cursor: pointer;">
+      <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+        <button onclick="closeModal()">キャンセル</button>
+        <button onclick="saveEdit()">保存</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
