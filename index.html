@@ -10,7 +10,7 @@
     .tab.active { background: #007bff; color: #fff; }
     .buttons {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 0.5rem;
       margin-bottom: 1rem;
     }
@@ -26,6 +26,44 @@
       border: 1px solid #ccc;
       background: #f9f9f9;
       text-align: left;
+      position: relative;
+    }
+    .button-main .label {
+      font-weight: bold;
+      display: block;
+    }
+    .button-main .content {
+      font-size: 12px;
+      color: #777;
+      margin-top: 2px;
+      max-height: 3.6em;
+      min-height: 3.6em;
+      overflow: hidden;
+      position: relative;
+      line-height: 1.2em;
+    }
+    .button-main .content::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 1.2em;
+      background: linear-gradient(to bottom, transparent, #f9f9f9);
+    }
+    .button-main.expanded .content {
+      max-height: none;
+      min-height: unset;
+    }
+    .button-main.expanded .content::after {
+      display: none;
+    }
+    .expand-icon {
+      font-size: 10px;
+      color: #999;
+      position: absolute;
+      bottom: 2px;
+      right: 6px;
     }
     .menu-button {
       position: absolute;
@@ -36,28 +74,37 @@
       font-size: 14px;
       cursor: pointer;
       color: #666;
+      z-index: 2;
     }
-    .menu {
-      display: none;
-      position: absolute;
-      top: 28px;
-      right: 0;
-      background: white;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      z-index: 10;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
     }
-    .menu button {
-      display: block;
-      padding: 0.3rem 0.6rem;
+    .modal-content {
       background: white;
-      border: none;
-      text-align: left;
+      padding: 1rem;
+      border-radius: 8px;
+      width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .modal-content input, .modal-content textarea {
       width: 100%;
-      cursor: pointer;
-      font-size: 13px;
+      font-size: 14px;
+      padding: 0.5rem;
     }
+    .modal-content button {
+      padding: 0.4rem 0.6rem;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .modal-buttons { display: flex; justify-content: flex-end; gap: 0.5rem; }
     textarea {
       width: 100%; height: 150px; font-size: 14px;
       padding: 1rem; box-sizing: border-box;
@@ -72,10 +119,20 @@
   <div class="buttons" id="buttons"></div>
 
   <textarea id="editor" placeholder="ここに定型文が追加されていきます..."></textarea>
-
   <div class="actions">
     <button onclick="copyText()">コピー</button>
     <button onclick="clearText()">クリア</button>
+  </div>
+
+  <div id="modal" class="modal" style="display:none;" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation();">
+      <input id="editLabel" placeholder="ラベル">
+      <textarea id="editContent" rows="4" placeholder="内容"></textarea>
+      <div class="modal-buttons">
+        <button onclick="closeModal()">キャンセル</button>
+        <button onclick="saveEdit()">保存</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -83,6 +140,7 @@
 
     let config = {};
     let currentTab = '';
+    let currentEditIndex = null;
 
     function renderTabs() {
       const tabContainer = document.getElementById('tabs');
@@ -109,57 +167,58 @@
 
         const btn = document.createElement('button');
         btn.className = 'button-main';
-        btn.textContent = label;
-        btn.onclick = () => insertText(content);
+
+        const labelDiv = document.createElement('span');
+        labelDiv.className = 'label';
+        labelDiv.textContent = label;
+
+        const contentDiv = document.createElement('span');
+        contentDiv.className = 'content';
+        contentDiv.textContent = content;
+
+        const expandIcon = document.createElement('span');
+        expandIcon.className = 'expand-icon';
+        expandIcon.textContent = '▼';
+
+        btn.appendChild(labelDiv);
+        btn.appendChild(contentDiv);
+        btn.appendChild(expandIcon);
+
+        btn.onclick = (e) => {
+          const isExpandIcon = e.target.classList.contains('expand-icon');
+          const isExpanded = btn.classList.contains('expanded');
+
+          if (isExpandIcon) {
+            if (!isExpanded) {
+              document.querySelectorAll('.button-main.expanded').forEach(b => {
+                b.classList.remove('expanded');
+                const icon = b.querySelector('.expand-icon');
+                if (icon) icon.textContent = '▼';
+              });
+              btn.classList.add('expanded');
+              expandIcon.textContent = '▲';
+            } else {
+              btn.classList.remove('expanded');
+              expandIcon.textContent = '▼';
+            }
+          } else {
+            insertText(content);
+          }
+        };
 
         const menuBtn = document.createElement('button');
         menuBtn.className = 'menu-button';
-        menuBtn.textContent = '⋮';
-
-        const menu = document.createElement('div');
-        menu.className = 'menu';
-
-        const editBtn = document.createElement('button');
-        editBtn.textContent = '編集';
-        editBtn.onclick = (e) => {
-          e.stopPropagation();
-          const newLabel = prompt("新しいボタンラベルを入力してください：", label);
-          const newContent = prompt("新しい内容を入力してください：", content);
-          if (newLabel !== null && newContent !== null) {
-            config[currentTab][index] = [newLabel, newContent];
-            renderButtons();
-          }
-        };
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = '削除';
-        deleteBtn.onclick = (e) => {
-          e.stopPropagation();
-          if (confirm(`「${label}」を削除しますか？`)) {
-            config[currentTab].splice(index, 1);
-            renderButtons();
-          }
-        };
-
-        menu.appendChild(editBtn);
-        menu.appendChild(deleteBtn);
-
+        menuBtn.textContent = '✎';
         menuBtn.onclick = (e) => {
           e.stopPropagation();
-          const openMenus = document.querySelectorAll('.menu');
-          openMenus.forEach(m => m.style.display = 'none');
-          menu.style.display = 'block';
+          currentEditIndex = index;
+          document.getElementById('editLabel').value = label;
+          document.getElementById('editContent').value = content;
+          document.getElementById('modal').style.display = 'flex';
         };
-
-        document.addEventListener('click', (event) => {
-          if (!wrapper.contains(event.target)) {
-            menu.style.display = 'none';
-          }
-        });
 
         wrapper.appendChild(btn);
         wrapper.appendChild(menuBtn);
-        wrapper.appendChild(menu);
         btnContainer.appendChild(wrapper);
       });
     }
@@ -171,11 +230,57 @@
 
     function copyText() {
       const text = document.getElementById('editor').value;
-      navigator.clipboard.writeText(text).then(() => alert("コピーしました！"));
+      if (!navigator.clipboard) {
+        const temp = document.createElement('textarea');
+        temp.value = text;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+        showCopyMessage();
+        return;
+      }
+      navigator.clipboard.writeText(text).then(() => {
+        showCopyMessage();
+      }).catch((err) => {
+        console.error(err);
+        alert("コピーに失敗しました");
+      });
+    }
+
+    function showCopyMessage() {
+      const msg = document.createElement('div');
+      msg.textContent = "コピーしました！";
+      msg.style.position = 'fixed';
+      msg.style.bottom = '20px';
+      msg.style.left = '50%';
+      msg.style.transform = 'translateX(-50%)';
+      msg.style.background = '#333';
+      msg.style.color = '#fff';
+      msg.style.padding = '0.6rem 1rem';
+      msg.style.borderRadius = '6px';
+      msg.style.zIndex = 10000;
+      msg.style.fontSize = '14px';
+      document.body.appendChild(msg);
+      setTimeout(() => msg.remove(), 2000);
     }
 
     function clearText() {
       document.getElementById('editor').value = '';
+    }
+
+    function closeModal(event) {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    function saveEdit() {
+      const newLabel = document.getElementById('editLabel').value;
+      const newContent = document.getElementById('editContent').value;
+      if (currentEditIndex !== null) {
+        config[currentTab][currentEditIndex] = [newLabel, newContent];
+        renderButtons();
+        closeModal();
+      }
     }
 
     fetch(GAS_URL)
