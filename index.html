@@ -17,24 +17,22 @@
       border-radius: 8px;
       border: 1px solid #ccc;
       background: #f0f0f0;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       min-width: 120px;
     }
     .menu-button {
+      position: absolute;
+      top: 2px;
+      right: 2px;
       background: none;
       border: none;
       font-size: 16px;
-      margin-left: 8px;
       cursor: pointer;
       color: #666;
     }
     .menu {
       display: none;
       position: absolute;
-      top: 110%;
+      top: 30px;
       right: 0;
       background: white;
       border: 1px solid #ccc;
@@ -94,15 +92,17 @@
       const btnContainer = document.getElementById('buttons');
       btnContainer.innerHTML = '';
       config[currentTab]?.forEach((row, index) => {
-        const label = row[0] || "";
-        const content = row[1] || "";
+        if (!Array.isArray(row) || row.length < 2) return;
+        const label = row[0];
+        const content = row[1];
+
         const wrapper = document.createElement('div');
         wrapper.className = 'button-wrapper';
 
         const btn = document.createElement('button');
         btn.className = 'button-main';
-        btn.onclick = () => insertText(content);
         btn.textContent = label;
+        btn.onclick = () => insertText(content);
 
         const menuBtn = document.createElement('button');
         menuBtn.className = 'menu-button';
@@ -135,14 +135,12 @@
 
         menu.appendChild(editBtn);
         menu.appendChild(deleteBtn);
-        wrapper.appendChild(btn);
-        wrapper.appendChild(menuBtn);
-        wrapper.appendChild(menu);
-        btnContainer.appendChild(wrapper);
 
         menuBtn.onclick = (e) => {
           e.stopPropagation();
-          menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+          const openMenus = document.querySelectorAll('.menu');
+          openMenus.forEach(m => m.style.display = 'none');
+          menu.style.display = 'block';
         };
 
         document.addEventListener('click', (event) => {
@@ -150,6 +148,11 @@
             menu.style.display = 'none';
           }
         });
+
+        wrapper.appendChild(btn);
+        wrapper.appendChild(menuBtn);
+        wrapper.appendChild(menu);
+        btnContainer.appendChild(wrapper);
       });
     }
 
