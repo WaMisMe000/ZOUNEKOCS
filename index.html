@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>定型文ランチャー</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; }
+    .tabs { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .tab { padding: 0.5rem 1rem; border: 1px solid #ccc; cursor: pointer; border-radius: 6px; }
+    .tab.active { background: #007bff; color: #fff; }
+    .buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+    .buttons button { padding: 0.5rem 1rem; font-size: 14px; cursor: pointer; }
+    textarea {
+      width: 100%; height: 150px; font-size: 14px;
+      padding: 1rem; box-sizing: border-box;
+    }
+    .actions { margin-top: 1rem; display: flex; gap: 1rem; }
+    .actions button { padding: 0.5rem 1rem; font-size: 14px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>定型文ランチャー</h1>
+  <div class="tabs" id="tabs"></div>
+  <div class="buttons" id="buttons"></div>
+
+  <textarea id="editor" placeholder="ここに定型文が追加されていきます..."></textarea>
+
+  <div class="actions">
+    <button onclick="copyText()">コピー</button>
+    <button onclick="clearText()">クリア</button>
+  </div>
+
+  <script>
+    const GAS_URL = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbwcOUxqRhEzi8jMogP1MsLYFfZHBLR0igdFooiD2JdAZdHgsZaR9mzTJ-o-O0Hc1K-QGw/exec/exec";
+
+    let config = {};
+    let currentTab = '';
+
+    function renderTabs() {
+      const tabContainer = document.getElementById('tabs');
+      tabContainer.innerHTML = '';
+      Object.keys(config).forEach(group => {
+        const tab = document.createElement('div');
+        tab.className = 'tab' + (group === currentTab ? ' active' : '');
+        tab.textContent = group;
+        tab.onclick = () => { currentTab = group; renderTabs(); renderButtons(); };
+        tabContainer.appendChild(tab);
+      });
+    }
+
+    function renderButtons() {
+      const btnContainer = document.getElementById('buttons');
+      btnContainer.innerHTML = '';
+      config[currentTab]?.forEach(text => {
+        const btn = document.createElement('button');
+        btn.textContent = text;
+        btn.onclick = () => insertText(text);
+        btnContainer.appendChild(btn);
+      });
+    }
+
+    function insertText(text) {
+      const editor = document.getElementById('editor');
+      editor.value += (editor.value ? '\n' : '') + text;
+    }
+
+    function copyText() {
+      const text = document.getElementById('editor').value;
+      navigator.clipboard.writeText(text).then(() => alert("コピーしました！"));
+    }
+
+    function clearText() {
+      document.getElementById('editor').value = '';
+    }
+
+    // GAS から読み込み
+    fetch(GAS_URL)
+      .then(res => res.json())
+      .then(data => {
+        config = data;
+        currentTab = Object.keys(config)[0];
+        renderTabs();
+        renderButtons();
+      })
+      .catch(err => alert("読み込みエラー: " + err));
+  </script>
+</body>
+</html>
