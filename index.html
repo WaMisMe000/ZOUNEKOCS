@@ -13,6 +13,12 @@
       background-color: #F4F4F6;
     }
     /* 🌟 Aエリア: タブ */
+    #tabs {
+  display: flex;
+  gap: 0.3rem;
+  flex: 1; /* ✅ タブが自然に伸びるように */
+}
+
     .tabs {
   display: flex;
   flex-wrap: nowrap;
@@ -20,10 +26,8 @@
   gap: 0.3rem;
   padding: 0.2rem 0;
   margin-bottom: 0.5rem;
-  scrollbar-width: thin;
-  scrollbar-color: #ccc transparent;
-  scrollbar-gutter: stable both-edges;
   align-items: center;
+  width: 100%; /* ✅ 横に広げる */
 }
     .tab {
       background-color: white;
@@ -179,7 +183,8 @@
 .delete-task:hover {
   color: #000;
 }
-    .tab.new-tab {
+.tab.new-tab {
+  flex-shrink: 0;
   background-color: #7AA6A8;
   color: white;
   font-weight: bold;
@@ -188,11 +193,8 @@
   border-radius: 6px;
   border: none;
   cursor: pointer;
-  margin-left: auto; /* 右端に寄せる */
 }
-.tab.new-tab:hover {
-  background-color: #5f8889;
-}
+
   </style>
 </head>
 <!-- 🌟 END: CSS -->
