@@ -423,42 +423,36 @@ btnContainer.appendChild(wrapper);
     }
 
     function saveEdit() {
-      const newLabel = document.getElementById('editLabel').value;
-      const newContent = document.getElementById('editContent').value;
-      
-      if (currentEditIndex !== null) {
-  // 既存の定型文を更新
-  config[currentTab][currentEditIndex][0] = newLabel;
-  config[currentTab][currentEditIndex][1] = newContent;
-  config[currentTab][currentEditIndex][2] = document.getElementById('editColor').value;
-  config[currentTab][currentEditIndex][3] = document.getElementById('editTask').value.trim();
-} else {
-  // 🌟 新規追加モード
+  const newLabel = document.getElementById('editLabel').value;
+  const newContent = document.getElementById('editContent').value;
+  const newColor = document.getElementById('editColor').value;
+  const newTask = document.getElementById('editTask').value.trim();
+
   if (!config[currentTab]) config[currentTab] = [];
-  config[currentTab].push([
-    newLabel,
-    newContent,
-    document.getElementById('editColor').value,
-    document.getElementById('editTask').value.trim()
-  ]);
+
+  if (currentEditIndex !== null) {
+    // 編集時
+    config[currentTab][currentEditIndex] = [newLabel, newContent, newColor, newTask];
+  } else {
+    // 🔥 新規追加時
+    config[currentTab].push([newLabel, newContent, newColor, newTask]);
+  }
+
+  renderButtons();
+  closeModal();
+
+  // ✅ GASにPOST
+  fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      sheetName: currentTab,
+      data: config[currentTab]
+    })
+  }).then(res => res.text())
+    .then(result => console.log('保存完了:', result))
+    .catch(err => alert("保存エラー: " + err));
 }
-
-    // GASにデータ送信
-fetch(GAS_URL, {
-  method: 'POST',
-  mode: 'no-cors', // ← これが重要
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    sheetName: currentTab,
-    data: config[currentTab]
-  })
-}).then(res => res.text())
-  .then(result => console.log('保存完了:', result))
-  .catch(err => alert("保存エラー: " + err));
-
-    }
 
     function renderColorPalette() {
   // 🌟 パステル系カラーパレット表示を生成
