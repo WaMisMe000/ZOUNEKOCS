@@ -14,16 +14,17 @@
     }
     /* 🌟 Aエリア: タブ */
     .tabs {
-      display: flex;
-      flex-wrap: nowrap;
-      overflow-x: hidden;
-      gap: 0.3rem;
-      padding: 0.2rem 0;
-      margin-bottom: 0.5rem;
-      scrollbar-width: thin;
-      scrollbar-color: #ccc transparent;
-      scrollbar-gutter: stable both-edges;
-    }
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 0.3rem;
+  padding: 0.2rem 0;
+  margin-bottom: 0.5rem;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+  scrollbar-gutter: stable both-edges;
+  align-items: center;
+}
     .tab {
       background-color: white;
       white-space: nowrap;
@@ -178,7 +179,20 @@
 .delete-task:hover {
   color: #000;
 }
-    
+    .tab.new-tab {
+  background-color: #7AA6A8;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  margin-left: auto; /* 右端に寄せる */
+}
+.tab.new-tab:hover {
+  background-color: #5f8889;
+}
   </style>
 </head>
 <!-- 🌟 END: CSS -->
@@ -187,10 +201,9 @@
 <!-- 🌟 START: HTML構造エリア -->
 <!-- 🌟 Aエリア: タブ -->
 <div style="display: flex; flex-direction: column; gap: 1rem; max-height: 80vh;">
-  <div class="tabs" id="tabs" style="position: sticky; top: 0; background: #F4F4F6; z-index: 10; height: 40px; align-items: center; display: flex; min-height: 40px;"></div>
-<!-- 🌟 あエリア: 新規追加 -->
-  <div style="display: flex; justify-content: flex-end; margin-bottom: 0.5rem;">
-  <button onclick="addNewTemplate()" style="background: #7AA6A8; color: white; border: none; border-radius: 6px; padding: 0.4rem 0.8rem; font-size: 14px;">＋ 新規作成</button>
+<div class="tabs" id="tabs-wrapper">
+  <div id="tabs"></div>
+  <button onclick="addNewTemplate()" class="tab new-tab">＋</button>
 </div>
   <!-- 🌟 Bエリア: ボタン -->
   <div class="buttons-resizable" style="position: relative;">
