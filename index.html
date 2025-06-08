@@ -426,7 +426,6 @@ fetch(GAS_URL, {
     sheetName: currentTab,
     data: config[currentTab]
   })
-});
 }).then(res => res.text())
   .then(result => console.log('保存完了:', result))
   .catch(err => alert("保存エラー: " + err));
