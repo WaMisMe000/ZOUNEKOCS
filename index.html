@@ -28,6 +28,12 @@
   margin-bottom: 0.5rem;
   align-items: center;
   width: 100%; /* ✅ 横に広げる */
+      
+      scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+  scrollbar-gutter: stable both-edges;
+        flex-shrink: 0; /* ←これ追加でOK！潰れないようにする */
+
 }
     .tab {
       background-color: white;
