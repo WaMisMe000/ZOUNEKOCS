@@ -444,11 +444,12 @@ btnContainer.appendChild(wrapper);
   // ✅ GASにPOST
   fetch(GAS_URL, {
   method: 'POST',
+  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
   body: new URLSearchParams({
     sheetName: currentTab,
     data: JSON.stringify(config[currentTab])
   })
-});
+})
 .then(res => res.text())
 .then(result => console.log('保存完了:', result))
 .catch(err => alert("保存エラー: " + err));
