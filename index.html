@@ -236,7 +236,7 @@
   </div>
 
   <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbz-s4EO_hb5dw9AhqGTFVaGX3jVdkQ6KxUCfVlIIaDpl7b7oZ0jso-Ju59hmKSKPaHFBw/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbw-0TYd88ju5m54hWr3NdjlMWczshf4Wrxhl5XN-C6t3jctSlKPEN9HV_C3v-Y9e-Es_Q/exec";
 
     let config = {};
     let currentTab = '';
@@ -443,15 +443,17 @@ btnContainer.appendChild(wrapper);
 
   // ✅ GASにPOST
   fetch(GAS_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      sheetName: currentTab,
-      data: config[currentTab]
-    })
-  }).then(res => res.text())
-    .then(result => console.log('保存完了:', result))
-    .catch(err => alert("保存エラー: " + err));
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    sheetName: currentTab,
+    data: config[currentTab]
+  })
+})
+.then(res => res.text())
+.then(result => console.log('保存完了:', result))
+.catch(err => alert("保存エラー: " + err));
+
 }
 
     function renderColorPalette() {
