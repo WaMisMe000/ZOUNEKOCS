@@ -14,27 +14,25 @@
     }
     /* 🌟 Aエリア: タブ */
     #tabs {
-  display: flex;
-  gap: 0.3rem;
-  flex: 1; /* ✅ タブが自然に伸びるように */
-}
+      display: flex;
+      gap: 0.3rem;
+      flex: 1;
+    }
 
     .tabs {
-  display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  gap: 0.3rem;
-  padding: 0.2rem 0;
-  margin-bottom: 0.5rem;
-  align-items: center;
-  width: 100%; /* ✅ 横に広げる */
-      
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 0.3rem;
+      padding: 0.2rem 0;
+      margin-bottom: 0.5rem;
+      align-items: center;
+      width: 100%;
       scrollbar-width: thin;
-  scrollbar-color: #ccc transparent;
-  scrollbar-gutter: stable both-edges;
-        flex-shrink: 0; /* ←これ追加でOK！潰れないようにする */
-
-}
+      scrollbar-color: #ccc transparent;
+      scrollbar-gutter: stable both-edges;
+      flex-shrink: 0;
+    }
     .tab {
       background-color: white;
       white-space: nowrap;
@@ -126,81 +124,41 @@
     }
 
     .menu-button {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  color: #999;
-  z-index: 1;
-}
-.menu-button:hover {
-  color: #333;
-}
-/* 🌟 スクロールバーの見た目を整える（Webkitベースのブラウザ用） */
-.buttons-container::-webkit-scrollbar {
-  width: 10px;
-}
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #999;
+      z-index: 1;
+    }
+    .menu-button:hover { color: #333; }
 
-.buttons-container::-webkit-scrollbar-track {
-  background: transparent;
-}
+    /* 🌟 スクロールバーの見た目（Webkit） */
+    .buttons-container::-webkit-scrollbar { width: 10px; }
+    .buttons-container::-webkit-scrollbar-track { background: transparent; }
+    .buttons-container::-webkit-scrollbar-thumb {
+      background-color: #7AA6A8;
+      border-radius: 10px;
+      border: 2px solid #F4F4F6;
+    }
 
-.buttons-container::-webkit-scrollbar-thumb {
-  background-color: #7AA6A8;
-  border-radius: 10px;
-  border: 2px solid #F4F4F6; /* 背景色と同じにして浮かせる感じ */
-}
+    /* Firefox用 */
+    .buttons-container { scrollbar-width: thin; scrollbar-color: #7AA6A8 transparent; }
 
-/* Firefox用（あまり自由度はない） */
-.buttons-container {
-  scrollbar-width: thin;
-  scrollbar-color: #7AA6A8 transparent;
-}
-
-.task-list {
-  margin-top: -2rem;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 1rem;
-  font-size: 14px;
-}
-.task-list li {
-  margin-bottom: 0.4rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.task-list li.completed {
-  text-decoration: line-through;
-  color: #aaa;
-}
-.task-list li:hover .delete-task {
-  visibility: visible;
-}
-.delete-task {
-  visibility: hidden;
-  cursor: pointer;
-  color: #999;
-}
-.delete-task:hover {
-  color: #000;
-}
-.tab.new-tab {
-  flex-shrink: 0;
-  background-color: #7AA6A8;
-  color: white;
-  font-weight: bold;
-  font-size: 17px;
-  padding: 0.2em 0.4em;
-  border-radius: 6px;
-  border: none;
-  cursor: pointer;
-}
-
+    .tab.new-tab {
+      flex-shrink: 0;
+      background-color: #7AA6A8;
+      color: white;
+      font-weight: bold;
+      font-size: 17px;
+      padding: 0.2em 0.4em;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <!-- 🌟 END: CSS -->
@@ -209,10 +167,11 @@
 <!-- 🌟 START: HTML構造エリア -->
 <!-- 🌟 Aエリア: タブ -->
 <div style="display: flex; flex-direction: column; gap: 1rem; max-height: 80vh;">
-<div class="tabs" id="tabs-wrapper">
-  <div id="tabs"></div>
-  <button onclick="addNewTemplate()" class="tab new-tab">＋</button>
-</div>
+  <div class="tabs" id="tabs-wrapper">
+    <div id="tabs"></div>
+    <button onclick="addNewTemplate()" class="tab new-tab">＋</button>
+  </div>
+
   <!-- 🌟 Bエリア: ボタン -->
   <div class="buttons-resizable" style="position: relative;">
     <div class="buttons-container" style="flex: 1; overflow-y: auto; max-height: calc(3.6em * 3 + 2rem); margin-bottom: 0.5rem;">
@@ -228,15 +187,8 @@
   </div>
 
   <!-- 🌟 Dエリア: アクション -->
-    <ul id="taskList" class="task-list"></ul>
-
   <div class="actions" style="margin-top: -0.9rem; display: flex; justify-content: space-between;">
     <button onclick="clearText()" style="background: #eee; border: 1px solid #ccc; border-radius: 6px;">クリア</button>
-    <button onclick="document.getElementById('taskList').innerHTML = ''"
-        style="background: #eee; border: 1px solid #ccc; border-radius: 6px;">
-  タスクリセット
-</button>
-
     <div style="flex: 1"></div>
     <button onclick="copyText()" style="background: #7AA6A8; color: #fff; border: none; border-radius: 6px;">コピー</button>
   </div>
@@ -266,26 +218,25 @@
     }
 
     function renderButtons() {
-  // 🌟 モーダル閉じてからボタンを再描画
-  document.getElementById('modal').style.display = 'none';
+      // モーダル閉じ
+      document.getElementById('modal').style.display = 'none';
 
-  const btnContainer = document.getElementById('buttons');
-  btnContainer.innerHTML = '';
+      const btnContainer = document.getElementById('buttons');
+      btnContainer.innerHTML = '';
 
-  // 🌟 現在のタブのボタン一覧を走査して生成
-  config[currentTab]?.forEach((row, index) => {
-    if (!Array.isArray(row) || row.length < 2 || !row[0] || !row[1]) return;
-
+      // 現在タブのボタン一覧を生成
+      (config[currentTab] || []).forEach((row, index) => {
+        if (!Array.isArray(row)) return;
         const label = row[0];
         const content = row[1];
         const color = row[2] || '#f9f9f9';
+        if (!label || !content) return;
 
         const wrapper = document.createElement('div');
-wrapper.className = 'button-wrapper';
+        wrapper.className = 'button-wrapper';
 
-const btn = document.createElement('button');
-btn.className = 'button-main';
-
+        const btn = document.createElement('button');
+        btn.className = 'button-main';
         btn.style.background = color;
 
         const labelDiv = document.createElement('span');
@@ -302,82 +253,71 @@ btn.className = 'button-main';
 
         btn.appendChild(labelDiv);
         btn.appendChild(contentDiv);
-       const lines = content.split(/\r?\n/).length;
-       const displayText = content.replace(/\n/g, '<br>');
-       const renderedLines = displayText.split(/<br\s*\/?>/).length;
 
-       if (lines >= 3 || content.length >= 77 || renderedLines >= 2) {
-         btn.appendChild(expandIcon);
-       }
-
-          btn.onclick = (e) => {
-      const bounds = btn.getBoundingClientRect();
-      const clickY = e.clientY - bounds.top;
-      const isBottomClick = clickY > bounds.height - 20;
-      const isExpanded = btn.classList.contains('expanded');
-
-      // 🌟 下部クリックで展開・折りたたみを切り替え
-      if (isBottomClick) {
-        if (!isExpanded) {
-          // 🌟 他の展開中のボタンを閉じる
-          document.querySelectorAll('.button-main.expanded').forEach(b => {
-            b.classList.remove('expanded');
-            const icon = b.querySelector('.expand-icon');
-            if (icon) icon.textContent = '▼';
-          });
-          btn.classList.add('expanded');
-          expandIcon.textContent = '▲';
-        } else {
-          btn.classList.remove('expanded');
-          expandIcon.textContent = '▼';
+        const lines = (content || '').split(/\r?\n/).length;
+        const displayText = (content || '').replace(/\n/g, '<br>');
+        const renderedLines = displayText.split(/<br\s*\/?/).length;
+        if (lines >= 3 || (content || '').length >= 77 || renderedLines >= 2) {
+          btn.appendChild(expandIcon);
         }
-        return;
-      }
 
-      // 🌟 通常クリックでテキスト挿入
-      insertText(content);
-if (row[3]) addTasksFromText(row[3]);
-            console.log(config);
-    };
+        btn.onclick = (e) => {
+          const bounds = btn.getBoundingClientRect();
+          const clickY = e.clientY - bounds.top;
+          const isBottomClick = clickY > bounds.height - 20;
+          const isExpanded = btn.classList.contains('expanded');
 
-       
+          // 下部クリックで展開/折りたたみ
+          if (isBottomClick) {
+            if (!isExpanded) {
+              document.querySelectorAll('.button-main.expanded').forEach(b => {
+                b.classList.remove('expanded');
+                const icon = b.querySelector('.expand-icon');
+                if (icon) icon.textContent = '▼';
+              });
+              btn.classList.add('expanded');
+              expandIcon.textContent = '▲';
+            } else {
+              btn.classList.remove('expanded');
+              expandIcon.textContent = '▼';
+            }
+            return;
+          }
 
-// ... ラベル・内容・展開アイコンの設定など ...
+          // 通常クリックでテキスト挿入のみ（タスク機能は削除）
+          insertText(content);
+        };
 
-const menuBtn = document.createElement('button');
-menuBtn.className = 'menu-button';
-menuBtn.textContent = '…';
-menuBtn.style.position = 'absolute';
-menuBtn.style.top = '2px';
-menuBtn.style.right = '2px';
-menuBtn.style.background = 'none';
-menuBtn.style.border = 'none';
-menuBtn.style.cursor = 'pointer';
-menuBtn.style.fontSize = '14px';
-menuBtn.title = '編集';
-menuBtn.onclick = (e) => {
-  e.stopPropagation();
-  currentEditIndex = index;
-  document.getElementById('editLabel').value = label;
-  document.getElementById('editContent').value = content;
-  document.getElementById('editColor').value = color;
-  document.getElementById('editTask').value = (row[3] || "").trim();
-  document.getElementById('modal').style.display = 'flex';
-};
+        const menuBtn = document.createElement('button');
+        menuBtn.className = 'menu-button';
+        menuBtn.textContent = '…';
+        menuBtn.style.position = 'absolute';
+        menuBtn.style.top = '2px';
+        menuBtn.style.right = '2px';
+        menuBtn.style.background = 'none';
+        menuBtn.style.border = 'none';
+        menuBtn.style.cursor = 'pointer';
+        menuBtn.style.fontSize = '14px';
+        menuBtn.title = '編集';
+        menuBtn.onclick = (e) => {
+          e.stopPropagation();
+          currentEditIndex = index;
+          document.getElementById('editLabel').value = label;
+          document.getElementById('editContent').value = content;
+          document.getElementById('editColor').value = color;
+          document.getElementById('modal').style.display = 'flex';
+        };
 
-wrapper.appendChild(menuBtn); // ← これが消えてると表示されない
-wrapper.appendChild(btn);     // ← ボタン本体
-btnContainer.appendChild(wrapper);
+        wrapper.appendChild(menuBtn);
+        wrapper.appendChild(btn);
+        btnContainer.appendChild(wrapper);
       });
     }
 
-   function insertText(text) {
-  // 🌟 テキストボックス末尾に定型文を追記（改行付き）
-  const editor = document.getElementById('editor');
-  const current = editor.value;
-  const endsWithNewline = current.endsWith('\n');
-
-
+    function insertText(text) {
+      const editor = document.getElementById('editor');
+      const current = editor.value;
+      const endsWithNewline = current.endsWith('\n');
       if (current) {
         if (!endsWithNewline) {
           editor.value = current + '\n\n' + text;
@@ -387,8 +327,6 @@ btnContainer.appendChild(wrapper);
       } else {
         editor.value = text;
       }
-     
-
     }
 
     function copyText() {
@@ -429,42 +367,39 @@ btnContainer.appendChild(wrapper);
     }
 
     function saveEdit() {
-  const newLabel = document.getElementById('editLabel').value;
-  const newContent = document.getElementById('editContent').value;
-  const newColor = document.getElementById('editColor').value;
-  const newTask = document.getElementById('editTask').value.trim();
+      const newLabel = document.getElementById('editLabel').value;
+      const newContent = document.getElementById('editContent').value;
+      const newColor = document.getElementById('editColor').value;
 
-  if (!config[currentTab]) config[currentTab] = [];
+      if (!config[currentTab]) config[currentTab] = [];
 
-  if (currentEditIndex !== null) {
-    // 編集時
-    config[currentTab][currentEditIndex] = [newLabel, newContent, newColor, newTask];
-  } else {
-    // 🔥 新規追加時
-    config[currentTab].push([newLabel, newContent, newColor, newTask]);
-  }
+      if (currentEditIndex !== null) {
+        // 編集
+        config[currentTab][currentEditIndex] = [newLabel, newContent, newColor];
+      } else {
+        // 新規追加
+        config[currentTab].push([newLabel, newContent, newColor]);
+      }
 
-  renderButtons();
-  closeModal();
+      renderButtons();
+      closeModal();
 
-  // ✅ GASにPOST
-  fetch(GAS_URL, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  body: new URLSearchParams({
-    sheetName: currentTab,
-    data: JSON.stringify(config[currentTab])
-  })
-})
-.then(res => res.text())
-.then(result => console.log('保存完了:', result))
-.catch(err => alert("保存エラー: " + err));
-
-}
+      // GASにPOST（3要素に統一）
+      fetch(GAS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          sheetName: currentTab,
+          data: JSON.stringify(config[currentTab])
+        })
+      })
+      .then(res => res.text())
+      .then(result => console.log('保存完了:', result))
+      .catch(err => alert("保存エラー: " + err));
+    }
 
     function renderColorPalette() {
-  // 🌟 パステル系カラーパレット表示を生成
-  const palette = ['#DCEBF2', '#F3D8D5', '#FAE3E1', '#E9D8C9', '#F8EDEB', '#D6E2E9', '#E3DFFF', '#D8EBD8', '#FFF3D6', '#FAD2CF'];
+      const palette = ['#DCEBF2', '#F3D8D5', '#FAE3E1', '#E9D8C9', '#F8EDEB', '#D6E2E9', '#E3DFFF', '#D8EBD8', '#FFF3D6', '#FAD2CF'];
       const container = document.getElementById('colorPalette');
       container.innerHTML = '';
       palette.forEach(color => {
@@ -482,12 +417,14 @@ btnContainer.appendChild(wrapper);
       });
     }
 
+    // 初期ロード
     fetch(GAS_URL)
       .then(res => res.json())
       .then(data => {
         config = {};
         for (const key in data) {
-          config[key] = data[key];
+          // 旧データ(4要素)が残っていても先頭3要素だけ使う
+          config[key] = (data[key] || []).map(row => Array.isArray(row) ? [row[0], row[1], row[2]] : row);
         }
         currentTab = Object.keys(config)[0];
         renderTabs();
@@ -495,112 +432,62 @@ btnContainer.appendChild(wrapper);
         renderColorPalette();
       })
       .catch(err => alert("読み込みエラー: " + err));
-  document.addEventListener('DOMContentLoaded', () => {
-  const resizer = document.querySelector('.resizer');
-  const container = document.querySelector('.buttons-container');
-  let startY, startHeight;
 
-  resizer.addEventListener('mousedown', e => {
-    startY = e.clientY;
-    startHeight = parseInt(document.defaultView.getComputedStyle(container).height, 10);
-    document.documentElement.addEventListener('mousemove', doDrag);
-    document.documentElement.addEventListener('mouseup', stopDrag);
-  });
+    // リサイズ（ボタン領域）
+    document.addEventListener('DOMContentLoaded', () => {
+      const resizer = document.querySelector('.resizer');
+      const container = document.querySelector('.buttons-container');
+      let startY, startHeight;
 
-  function doDrag(e) {
-    container.style.maxHeight = `${startHeight + e.clientY - startY}px`;
-  }
+      resizer.addEventListener('mousedown', e => {
+        startY = e.clientY;
+        startHeight = parseInt(document.defaultView.getComputedStyle(container).height, 10);
+        document.documentElement.addEventListener('mousemove', doDrag);
+        document.documentElement.addEventListener('mouseup', stopDrag);
+      });
 
-  function stopDrag() {
-    document.documentElement.removeEventListener('mousemove', doDrag);
-    document.documentElement.removeEventListener('mouseup', stopDrag);
-  }
-});
-document.addEventListener('DOMContentLoaded', () => {
-  const resizer = document.querySelector('.resizer');
-  const container = document.querySelector('.buttons-container');
-  let startY, startHeight;
+      function doDrag(e) {
+        container.style.maxHeight = `${startHeight + e.clientY - startY}px`;
+      }
+      function stopDrag() {
+        document.documentElement.removeEventListener('mousemove', doDrag);
+        document.documentElement.removeEventListener('mouseup', stopDrag);
+      }
 
-  resizer.addEventListener('mousedown', e => {
-    startY = e.clientY;
-    startHeight = parseInt(document.defaultView.getComputedStyle(container).height, 10);
-    document.documentElement.addEventListener('mousemove', doDrag);
-    document.documentElement.addEventListener('mouseup', stopDrag);
-  });
+      // リサイズ（エディタ）
+      const editorResizer = document.querySelector('.editor-resizer');
+      const editor = document.getElementById('editor');
+      let startEditorHeight, startY2;
 
-  function doDrag(e) {
-    container.style.maxHeight = `${startHeight + e.clientY - startY}px`;
-  }
+      editorResizer.addEventListener('mousedown', e => {
+        startY2 = e.clientY;
+        startEditorHeight = parseInt(document.defaultView.getComputedStyle(editor).height, 10);
+        document.documentElement.addEventListener('mousemove', resizeEditor);
+        document.documentElement.addEventListener('mouseup', stopResizeEditor);
+      });
 
-  function stopDrag() {
-    document.documentElement.removeEventListener('mousemove', doDrag);
-    document.documentElement.removeEventListener('mouseup', stopDrag);
-  }
-
-  const editorResizer = document.querySelector('.editor-resizer');
-  const editor = document.getElementById('editor');
-  let startEditorHeight;
-
-  editorResizer.addEventListener('mousedown', e => {
-    startY = e.clientY;
-    startEditorHeight = parseInt(document.defaultView.getComputedStyle(editor).height, 10);
-    document.documentElement.addEventListener('mousemove', resizeEditor);
-    document.documentElement.addEventListener('mouseup', stopResizeEditor);
-  });
-
-  function resizeEditor(e) {
-    editor.style.height = `${startEditorHeight + e.clientY - startY}px`;
-  }
-
-  function stopResizeEditor() {
-    document.documentElement.removeEventListener('mousemove', resizeEditor);
-    document.documentElement.removeEventListener('mouseup', stopResizeEditor);
-  }
-});
-
-    //タスク管理
-    function addTasksFromText(text) {
-  const taskList = document.getElementById('taskList');
-  const tasks = text.split(/\r?\n/).map(line => line.trim()).filter(line => line !== "");
-
-  tasks.forEach(task => {
-    if (![...taskList.children].some(li => li.textContent.trim().startsWith(task))) {
-      const li = document.createElement('li');
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.onchange = () => li.classList.toggle('completed');
-
-      const span = document.createElement('span');
-      span.textContent = task;
-
-      const del = document.createElement('span');
-      del.textContent = '✖';
-      del.className = 'delete-task';
-      del.onclick = () => li.remove();
-
-      li.appendChild(checkbox);
-      li.appendChild(span);
-      li.appendChild(del);
-      taskList.appendChild(li);
-    }
-  });
-}
+      function resizeEditor(e) {
+        editor.style.height = `${startEditorHeight + e.clientY - startY2}px`;
+      }
+      function stopResizeEditor() {
+        document.documentElement.removeEventListener('mousemove', resizeEditor);
+        document.documentElement.removeEventListener('mouseup', stopResizeEditor);
+      }
+    });
 
     function addNewTemplate() {
-  currentEditIndex = null; // ← 新規作成モードに
-  document.getElementById('editLabel').value = '';
-  document.getElementById('editContent').value = '';
-  document.getElementById('editTask').value = '';
-  document.getElementById('editColor').value = '#f9f9f9';
-  document.getElementById('modal').style.display = 'flex';
-}
-</script>
+      currentEditIndex = null;
+      document.getElementById('editLabel').value = '';
+      document.getElementById('editContent').value = '';
+      document.getElementById('editColor').value = '#f9f9f9';
+      document.getElementById('modal').style.display = 'flex';
+    }
+  </script>
 
   <div id="modal" class="modal" onclick="closeModal()" style="display:none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;">
     <div class="modal-content" style="background: white; padding: 1rem; border-radius: 8px; width: 300px; display: flex; flex-direction: column; gap: 0.5rem;" onclick="event.stopPropagation();">
       <input id="editLabel" placeholder="ラベル">
       <textarea id="editContent" rows="4" placeholder="内容"></textarea>
-      <textarea id="editTask" rows="3" placeholder="タスク（改行で複数追加）" style="height:77px;"></textarea>
       <div id="colorPalette" style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.5rem 0;"></div>
       <input type="color" id="editColor" value="#f9f9f9" style="width: 32px; height: 32px; border: none; border-radius: 50%; cursor: pointer;">
       <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
@@ -609,5 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     </div>
   </div>
+</div>
 </body>
 </html>
+<!-- 🌟 END: HTML構造 -->
