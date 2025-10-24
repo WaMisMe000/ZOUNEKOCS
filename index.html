@@ -33,10 +33,13 @@
 </head>
 <body>
   <div style="display: flex; flex-direction: column; gap: 1rem; max-height: 80vh;">
-    <div class="tabs" id="tabs-wrapper">
-      <div id="tabs"></div>
-      <button onclick="addNewTemplate()" class="tab new-tab">＋</button>
-    </div>
+   <div class="tabs" id="tabs-wrapper">
+  <div id="tabs"></div>
+  <!-- 👇 追加：カテゴリ追加ボタン -->
+  <button onclick="addNewCategory()" class="tab new-tab">＋カテゴリ</button>
+  <!-- 既存：テンプレ追加ボタン -->
+  <button onclick="addNewTemplate()" class="tab new-tab">＋</button>
+</div>
 
     <div class="buttons-resizable" style="position: relative;">
       <div class="buttons-container" style="flex: 1; overflow-y: auto; max-height: calc(3.6em * 3 + 2rem); margin-bottom: 0.5rem;">
@@ -185,6 +188,62 @@
         updatePreview('#f9f9f9');
         document.getElementById('modal').style.display='flex';
       }
+
+      function sanitizeSheetName(name) {
+    return name.replace(/[:\\/?*\[\]]/g, '').trim();
+  }
+
+  function addNewCategory() {
+    let name = prompt('新しいカテゴリ名を入力してください（例：お詫び/遅延）');
+    if (name === null) return; // キャンセル
+    name = sanitizeSheetName(name);
+    if (!name) { alert('カテゴリ名が空です'); return; }
+
+    if (config[name]) { alert('同名のカテゴリが既にあります'); return; }
+
+    // 新しいカテゴリ（＝シート）をローカルに作成
+    config[name] = [];
+
+    // いったんアクティブタブを新カテゴリに
+    currentTab = name;
+
+    // 画面更新
+    renderTabs();
+    renderButtons();
+
+    // GASに空データでPOST（サーバ側で未作成ならシート作成を想定）
+    saveEmptySheetToGAS(name)
+      .then(() => showToast('カテゴリを作成しました'))
+      .catch(err => alert('カテゴリ作成エラー: ' + err));
+  }
+
+  // トースト（任意）
+  function showToast(text){
+    const msg = document.createElement('div');
+    msg.textContent = text;
+    Object.assign(msg.style, {
+      position:'fixed', bottom:'20px', left:'50%', transform:'translateX(-50%)',
+      background:'#333', color:'#fff', padding:'0.6rem 1rem', borderRadius:'6px',
+      zIndex:10000, fontSize:'14px'
+    });
+    document.body.appendChild(msg); setTimeout(()=>msg.remove(), 1500);
+  }
+
+  // 指定シート名に空配列を保存（＝シート作成トリガ）
+  function saveEmptySheetToGAS(sheetName) {
+    return fetch(GAS_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body: new URLSearchParams({
+        sheetName: sheetName,
+        data: JSON.stringify([])   // 👈 空で送る
+      })
+    }).then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    });
+  }
+      
     </script>
 
     <div id="modal" class="modal" onclick="closeModal()" style="display:none; position: fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000;">
@@ -208,4 +267,5 @@
   </div>
 </body>
 </html>
+
 
