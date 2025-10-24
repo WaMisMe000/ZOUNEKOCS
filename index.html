@@ -21,6 +21,13 @@
     .menu-button { position: absolute; top: 4px; right: 4px; background: none; border: none; cursor: pointer; font-size: 16px; color: #999; z-index: 1; }
     .menu-button:hover { color: #333; }
     .tab.new-tab { flex-shrink: 0; background-color: #7AA6A8; color: white; font-weight: bold; font-size: 17px; padding: 0.2em 0.4em; border-radius: 6px; border: none; cursor: pointer; }
+
+    /* パレット */
+    .palette { display: flex; gap: 10px; align-items: center; flex-wrap: nowrap; }
+    .swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; box-shadow: 0 0 0 1px rgba(0,0,0,0.06) inset; }
+    .swatch.active { border-color: #333; }
+    .color-preview { width: 28px; height: 28px; border-radius: 4px; border: 1px solid #e0e0e0; }
+
     .delete-btn { background: none; border: none; color: #c00; cursor: pointer; font-size: 18px; }
     .delete-btn:hover { color: #900; }
   </style>
@@ -90,6 +97,8 @@
             document.getElementById('editLabel').value = label;
             document.getElementById('editContent').value = content;
             document.getElementById('editColor').value = color;
+            renderColorPalette(color);
+            updatePreview(color);
             document.getElementById('modal').style.display = 'flex';
           };
           wrapper.appendChild(menuBtn);
@@ -99,12 +108,23 @@
       }
 
       function insertText(text){const e=document.getElementById('editor');e.value+=(e.value?'\n\n':'')+text;}
-      function copyText(){navigator.clipboard.writeText(document.getElementById('editor').value).then(()=>alert('コピーしました！'));}
+      function copyText(){
+        const t=document.getElementById('editor').value;
+        if(!navigator.clipboard){alert('コピーできませんでした');return;}
+        navigator.clipboard.writeText(t).then(()=>{
+          const msg=document.createElement('div');
+          msg.textContent='コピーしました！';
+          Object.assign(msg.style,{position:'fixed',bottom:'20px',left:'50%',transform:'translateX(-50%)',background:'#333',color:'#fff',padding:'0.6rem 1rem',borderRadius:'6px',zIndex:10000,fontSize:'14px'});
+          document.body.appendChild(msg); setTimeout(()=>msg.remove(),1500);
+        });
+      }
       function clearText(){document.getElementById('editor').value='';}
       function closeModal(){document.getElementById('modal').style.display='none';}
 
       function saveEdit(){
-        const l=document.getElementById('editLabel').value,c=document.getElementById('editContent').value,col=document.getElementById('editColor').value;
+        const l=document.getElementById('editLabel').value,
+              c=document.getElementById('editContent').value,
+              col=document.getElementById('editColor').value;
         if(!config[currentTab])config[currentTab]=[];
         if(currentEditIndex!==null)config[currentTab][currentEditIndex]=[l,c,col]; else config[currentTab].push([l,c,col]);
         renderButtons(); closeModal(); saveToGAS();
@@ -121,16 +141,65 @@
         fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({sheetName:currentTab,data:JSON.stringify(config[currentTab])})});
       }
 
-      fetch(GAS_URL).then(r=>r.json()).then(data=>{config=data;currentTab=Object.keys(config)[0];renderTabs();renderButtons();});
+      function renderColorPalette(selected){
+        const palette=['#DCEBF2','#F3D8D5','#FAE3E1','#E9D8C9','#F8EDEB','#D6E2E9','#E3DFFF','#D8EBD8','#FFF3D6','#FAD2CF'];
+        const container=document.getElementById('colorPalette');
+        container.innerHTML='';
+        palette.forEach(col=>{
+          const d=document.createElement('div');
+          d.className='swatch'+(col===selected?' active':'');
+          d.style.background=col;
+          d.title=col;
+          d.onclick=()=>{ document.getElementById('editColor').value=col; renderColorPalette(col); updatePreview(col); };
+          container.appendChild(d);
+        });
+      }
+      function updatePreview(col){ document.getElementById('colorPreview').style.background=col; }
+
+      // 初期ロード
+      fetch(GAS_URL)
+        .then(r=>r.json())
+        .then(data=>{
+          config={};
+          for(const k in data){ config[k]=(data[k]||[]).map(row=>Array.isArray(row)?[row[0],row[1],row[2]]:row); }
+          currentTab=Object.keys(config)[0];
+          renderTabs(); renderButtons();
+        })
+        .catch(err=>alert('読み込みエラー: '+err));
+
+      // リサイズ（ボタン領域）
+      document.addEventListener('DOMContentLoaded',()=>{
+        const resizer=document.querySelector('.resizer');
+        const container=document.querySelector('.buttons-container');
+        let startY,startHeight;
+        resizer.addEventListener('mousedown',e=>{startY=e.clientY;startHeight=parseInt(getComputedStyle(container).height,10);document.documentElement.addEventListener('mousemove',doDrag);document.documentElement.addEventListener('mouseup',stopDrag);});
+        function doDrag(e){container.style.maxHeight=`${startHeight+e.clientY-startY}px`;}
+        function stopDrag(){document.documentElement.removeEventListener('mousemove',doDrag);document.documentElement.removeEventListener('mouseup',stopDrag);}        
+      });
+
+      function addNewTemplate(){
+        currentEditIndex=null;
+        document.getElementById('editLabel').value='';
+        document.getElementById('editContent').value='';
+        document.getElementById('editColor').value='#f9f9f9';
+        renderColorPalette('#f9f9f9');
+        updatePreview('#f9f9f9');
+        document.getElementById('modal').style.display='flex';
+      }
     </script>
 
     <div id="modal" class="modal" onclick="closeModal()" style="display:none; position: fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000;">
-      <div class="modal-content" style="background:white; padding:1rem; border-radius:8px; width:300px; display:flex; flex-direction:column; gap:0.5rem; position:relative;" onclick="event.stopPropagation();">
+      <div class="modal-content" style="background:white; padding:1rem; border-radius:8px; width:320px; display:flex; flex-direction:column; gap:0.6rem; position:relative;" onclick="event.stopPropagation();">
         <input id="editLabel" placeholder="ラベル">
         <textarea id="editContent" rows="4" placeholder="内容"></textarea>
-        <input type="color" id="editColor" value="#f9f9f9" style="width:32px;height:32px;border:none;border-radius:50%;cursor:pointer;">
+
+        <!-- パレット行 -->
+        <div class="palette" id="colorPalette"></div>
+        <div class="color-preview" id="colorPreview"></div>
+        <input type="color" id="editColor" value="#f9f9f9" style="width: 32px; height: 32px; border: none; border-radius: 50%; cursor: pointer;" onchange="updatePreview(this.value); renderColorPalette(this.value)">
+
         <div style="display:flex; justify-content:space-between; align-items:center;">
-          <button class="delete-btn" onclick="deleteTemplate()">🗑️</button>
+          <button class="delete-btn" onclick="deleteTemplate()" title="削除">🗑️</button>
           <div style="display:flex; gap:0.5rem;">
             <button onclick="closeModal()">キャンセル</button>
             <button onclick="saveEdit()">保存</button>
